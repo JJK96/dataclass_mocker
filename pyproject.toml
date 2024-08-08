@@ -1,0 +1,7 @@
+[project]
+name = "dataclass_mocker"
+description = "Automatically generate arguments for classes or functions to instantiate or call them."
+version = "0.1"
+authors = [
+    {name = "Jan-Jaap Korpershoek"}
+]
