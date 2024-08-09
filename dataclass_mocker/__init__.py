@@ -5,8 +5,11 @@ from enum import EnumType
 import inspect
 from datetime import date, datetime
 
+class SkipArgument(Exception):
+    pass
+
 class Mocker:
-    to_override = []
+    to_override = [None]
     def __init__(self, to_override=None):
         if to_override is not None:
             self.to_override = to_override
@@ -100,11 +103,14 @@ class Mocker:
         arguments = {}
 
         for name, param in signature.parameters.items():
-            if (param.default == inspect.Parameter.empty or param.default in self.to_override) \
-                    and param.annotation != inspect.Parameter.empty:
-                arguments[name] = self.generate_mock_value(param)
-            elif param.default != inspect.Parameter.empty:
-                arguments[name] = param.default
+            try:
+                if (param.default == inspect.Parameter.empty or param.default in self.to_override) \
+                        and param.annotation != inspect.Parameter.empty:
+                    arguments[name] = self.generate_mock_value(param)
+                elif param.default != inspect.Parameter.empty:
+                    arguments[name] = param.default
+            except SkipArgument:
+                continue
         
         return arguments
 
